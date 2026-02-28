@@ -1,12 +1,12 @@
 [
   {
-    "image": "Images/test1.jpg",
+    "image": "images/test1.jpg",
     "name": "COMBI Touch",
     "article": "ArtikelNr: 05020015-004",
     "serial": "SerienNr: 205"
   },
   {
-    "image": "Images/test2.jpg",
+    "image": "images/test2.jpg",
     "name": "PIEZOSURGERY Touch",
     "article": "ArtikelNr: 300456",
     "serial": "SerienNr: "
