@@ -21,6 +21,10 @@ body.dark {
    GLOBAL
    ============================== */
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     background-color: var(--bg-main); /* Allgemeine Hintergrundfarbe der Seite */
@@ -29,9 +33,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-
-
+    min-height: 100vh;
 }
 
 /* ==============================
@@ -152,11 +154,11 @@ button:hover {
     height: 280px;               /* feste Höhe wichtig */
     transition: transform 0.6s ease;
     transform-style: preserve-3d;
+}
 
-    @media (max-width: 400px) {
+@media (max-width: 400px) {
     .card-inner {
         height: 240px;
-    }
     }
 }
 
@@ -177,6 +179,8 @@ button:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    padding: 0 10px;
 }
 
 .card-back {
