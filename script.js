@@ -21,6 +21,7 @@ async function loadCards() {
 window.onload = async function() {
     await loadCards();
     loadLastResult();
+    showCard();
 
     let savedTheme = localStorage.getItem("theme");
 
