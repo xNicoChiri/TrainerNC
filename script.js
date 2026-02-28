@@ -1,7 +1,3 @@
-const basePath = window.location.hostname.includes("github.io")
-    ? "/TrainerNC/"
-    : "/";
-
 let awaitingConfirmation = false;
 let mode = "learn";
 let score = 0;
@@ -83,7 +79,7 @@ function showCard() {
 
     let card = cards[currentCard];
 
-    document.getElementById("cardImage").src = basePath + card.image;
+    document.getElementById("cardImage").src = card.image;
     document.getElementById("deviceName").innerText = card.name;
 
     document.getElementById("articleNr").innerText = card.article;
