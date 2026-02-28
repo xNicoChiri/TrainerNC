@@ -1,0 +1,237 @@
+/* ==============================
+   DESIGN SYSTEM
+   ============================== */
+
+:root {
+    --bg-main: #FFFFFF;
+    --bg-card: #E4E2E5;
+    --text-main: #343434;
+    --accent: #FF6600;
+}
+
+/* Dark Theme */
+body.dark {
+    --bg-main: #1c1c1e;
+    --bg-card: #2c2c2e;
+    --text-main: #f2f2f7;
+    --accent: #FF6600;
+}
+
+/* ==============================
+   GLOBAL
+   ============================== */
+
+body {
+    margin: 0;
+    background-color: var(--bg-main); /* Allgemeine Hintergrundfarbe der Seite */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+
+}
+
+/* ==============================
+   CONTAINER
+   ============================== */
+
+.container {
+    width: 100%;
+    max-width: 420px;   /* iPhone Breite */
+    margin: auto;
+    padding: 20px;
+}
+
+/* ==============================
+   CARD DESIGN sprich der abgerundete Hintergrund mit Schatten
+   ============================== */
+
+.card {
+    background: var(--bg-main);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* LIGHT MODE SHADOW */
+body:not(.dark) .card {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* DARK MODE GLOW */
+body.dark .card {
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),     /* feine Kontur */
+        0 8px 20px rgba(0,0,0,0.6),           /* Tiefen-Schatten */
+        0 0 25px rgba(255, 255, 255, 0.08);        /* dezenter Weißer Glow */
+}
+
+body.dark .card:hover { /* Hover-Effekt für dunklen Modus, mal schauen ob wir das so lassen oder nicht */
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 12px 28px rgba(0,0,0,0.8),
+        0 0 40px rgba(255, 255, 255, 0.15);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;   /* Bild bleibt vollständig sichtbar */
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    margin: 10px 0;
+}
+
+/* ==============================
+   BUTTONS
+   ============================== */
+
+.buttons { 
+    margin-top: 20px;
+    display: flex; 
+    justify-content: space-between;
+}
+
+button {
+    flex: 1;
+    margin: 8px;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+/* ==============================
+   PROGRESS BAR
+   ============================== */
+
+.progress-container {
+    height: 6px;
+    background: #ddd;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.secondary {
+    background: var(--bg-card);
+    color: white;
+}
+
+/* ================= FLIP CARD ================= */
+
+.flip-card {
+    perspective: 1000px;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 280px;               /* feste Höhe wichtig */
+    transition: transform 0.6s ease;
+    transform-style: preserve-3d;
+
+    @media (max-width: 400px) {
+    .card-inner {
+        height: 240px;
+    }
+    }
+}
+
+.flip-card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.card-front {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ================= THEME SWITCH ================= */
+
+.theme-switch {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.switch-track {
+    width: 70px;
+    height: 34px;
+    background: #d0d0d0;
+    border-radius: 50px;
+    position: relative;
+    transition: background 0.3s ease;
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.2),
+        inset 0 -2px 4px rgba(255,255,255,0.6);
+}
+
+.switch-thumb {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(
+        145deg,
+        #f2f2f2,
+        #c9c9c9
+    );
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 2px 4px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,255,255,0.8);
+}
+
+/* DARK MODE VISUAL STATE */
+
+body.dark .switch-track {
+    background: var(--accent);
+}
+
+body.dark .switch-thumb {
+    left: 38px;
+}
