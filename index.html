@@ -201,6 +201,30 @@ main {
   flex-direction: column;
   gap: 20px;
   animation: fadeUp 0.6s 0.15s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-widget::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 200px;
+  height: 200px;
+  background-image: url('MainLogoNC.PNG');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+  filter: invert(1);
+}
+
+.calendar-widget > * {
+  position: relative;
+  z-index: 1;
 }
 
 .widget-header {
@@ -679,6 +703,7 @@ main {
   </div>
 </header>
 
+<!-- TODO: Diskreten Link/Button zum Admin-Panel (admin.html) hinzufügen, z.B. Zahnrad-Icon in der Ecke des Headers -->
 <!-- ── MAIN ── -->
 <main>
 
