@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainerNC – Karten verwalten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0f0f10;
+  --surface:  #18181b;
+  --surface2: #1f1f23;
+  --border:   rgba(255,255,255,0.07);
+  --text:     #f0ede8;
+  --muted:    #8a8680;
+  --accent:   #e8632a;
+  --accent2:  #c44d1a;
+  --gold:     #c9a96e;
+  --green:    #4caf7d;
+  --red:      #e05252;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(15,15,16,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+.back-btn:hover { color: var(--text); background: #2a2a2e; transform: translateX(-2px); }
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.logo span {
+  color: var(--muted);
+  font-weight: 300;
+  font-size: 16px;
+}
+
+.btn-download {
+  padding: 9px 22px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-download:hover { background: var(--accent2); }
+
+/* ── LAYOUT ── */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── FORM PANEL ── */
+.form-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  position: sticky;
+  top: 88px;
+  animation: fadeUp 0.5s ease both;
+}
+
+.panel-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: var(--gold);
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus { border-color: var(--accent); }
+input[type="text"]::placeholder { color: var(--muted); }
+
+/* Image upload area */
+.image-upload {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.image-upload:hover { border-color: var(--accent); background: rgba(232,99,42,0.05); }
+
+.image-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-icon { font-size: 28px; margin-bottom: 6px; }
+.upload-text { font-size: 12px; color: var(--muted); }
+
+#imagePreview {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 8px;
+  display: none;
+  margin-top: 10px;
+}
+
+.image-path-info {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  text-align: center;
+  word-break: break-all;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--accent2); }
+
+.btn-secondary {
+  padding: 12px 18px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { color: var(--text); }
+
+/* ── CARD LIST ── */
+.list-panel {
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.list-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: var(--gold);
+}
+
+.card-count {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface2);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.import-area {
+  background: var(--surface);
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.import-area:hover { border-color: var(--accent); background: rgba(232,99,42,0.04); }
+.import-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.import-icon { font-size: 22px; }
+.import-text { font-size: 13px; color: var(--muted); }
+.import-text strong { color: var(--text); display: block; font-size: 14px; margin-bottom: 2px; }
+
+/* card items */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  animation: fadeUp 0.3s ease both;
+}
+.card-item:hover { border-color: rgba(232,99,42,0.2); }
+
+.card-item-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: var(--surface2);
+  object-fit: contain;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.card-item-thumb-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: var(--surface2);
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--muted);
+}
+
+.card-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-item-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-item-meta {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-edit, .btn-delete {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.btn-edit:hover { background: rgba(201,169,110,0.15); border-color: var(--gold); }
+.btn-delete:hover { background: rgba(224,82,82,0.15); border-color: var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+}
+.empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); }
+.toast.error   { border-color: var(--red); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  main { grid-template-columns: 1fr; padding: 16px; }
+  .form-panel { position: static; }
+  header { padding: 14px 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="index.html" class="back-btn">&#8592;</a>
+    <div class="logo">TrainerNC <span>/ Karten verwalten</span></div>
+  </div>
+  <button class="btn-download" onclick="downloadJSON()">
+    ⬇ cards.json herunterladen
+  </button>
+</header>
+
+<main>
+
+  <!-- FORMULAR -->
+  <div class="form-panel">
+    <div class="panel-title" id="formTitle">Neue Karte</div>
+
+    <div class="form-group">
+      <label>Gerätename *</label>
+      <input type="text" id="inputName" placeholder="z.B. COMBI Touch">
+    </div>
+
+    <div class="form-group">
+      <label>Artikelnummer</label>
+      <input type="text" id="inputArticle" placeholder="z.B. ArtikelNr: 05020015-004">
+    </div>
+
+    <div class="form-group">
+      <label>Seriennummer</label>
+      <input type="text" id="inputSerial" placeholder="z.B. SerienNr: 205">
+    </div>
+
+    <div class="form-group">
+      <label>Bild</label>
+      <div class="image-upload" id="uploadArea">
+        <input type="file" id="imageFile" accept="image/*" onchange="handleImageSelect(event)">
+        <div class="upload-icon">🖼</div>
+        <div class="upload-text">Klicken zum Auswählen</div>
+        <img id="imagePreview" src="" alt="Vorschau">
+      </div>
+      <div class="image-path-info" id="imagePathInfo">Bildpfad wird automatisch gesetzt</div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-primary" onclick="saveCard()">Speichern</button>
+      <button class="btn-secondary" id="cancelBtn" onclick="cancelEdit()" style="display:none">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- KARTENLISTE -->
+  <div class="list-panel">
+    <div class="list-header">
+      <div class="list-title">Alle Karten</div>
+      <div class="card-count" id="cardCount">0 Karten</div>
+    </div>
+
+    <!-- JSON importieren -->
+    <div class="import-area">
+      <input type="file" accept=".json" onchange="importJSON(event)">
+      <div class="import-icon">📂</div>
+      <div class="import-text">
+        <strong>cards.json importieren</strong>
+        Bestehende Datei laden um weiterzuarbeiten
+      </div>
+    </div>
+
+    <div class="card-list" id="cardList"></div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+
+let cards = [];
+let editIndex = null;
+let selectedImageName = null;
+
+// ── RENDER ──
+function renderCards() {
+  const list = document.getElementById('cardList');
+  const count = document.getElementById('cardCount');
+  count.textContent = cards.length + ' Karte' + (cards.length !== 1 ? 'n' : '');
+
+  if (cards.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🃏</div>
+        Noch keine Karten. Füge deine erste Karte hinzu!
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = cards.map((card, i) => `
+    <div class="card-item" style="animation-delay:${i * 0.04}s">
+      ${card.image
+        ? `<img class="card-item-thumb" src="${card.image}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">`
+        : ''}
+      <div class="card-item-thumb-placeholder" style="${card.image ? 'display:none' : ''}">📷</div>
+      <div class="card-item-info">
+        <div class="card-item-name">${card.name || '–'}</div>
+        <div class="card-item-meta">${[card.article, card.serial].filter(Boolean).join(' · ') || 'Keine Details'}</div>
+      </div>
+      <div class="card-item-actions">
+        <button class="btn-edit" onclick="editCard(${i})" title="Bearbeiten">✏️</button>
+        <button class="btn-delete" onclick="deleteCard(${i})" title="Löschen">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── ADD / EDIT ──
+function saveCard() {
+  const name = document.getElementById('inputName').value.trim();
+  if (!name) { showToast('❗ Gerätename ist Pflicht', 'error'); return; }
+
+  const article = document.getElementById('inputArticle').value.trim();
+  const serial  = document.getElementById('inputSerial').value.trim();
+  const image   = selectedImageName ? `images/${selectedImageName}` : (editIndex !== null ? cards[editIndex].image : '');
+
+  const card = { image, name, article, serial };
+
+  if (editIndex !== null) {
+    cards[editIndex] = card;
+    showToast('✅ Karte aktualisiert', 'success');
+    cancelEdit();
+  } else {
+    cards.push(card);
+    showToast('✅ Karte hinzugefügt', 'success');
+    resetForm();
+  }
+
+  renderCards();
+}
+
+function editCard(i) {
+  editIndex = i;
+  const card = cards[i];
+
+  document.getElementById('inputName').value    = card.name || '';
+  document.getElementById('inputArticle').value = card.article || '';
+  document.getElementById('inputSerial').value  = card.serial || '';
+  document.getElementById('formTitle').textContent = 'Karte bearbeiten';
+  document.getElementById('cancelBtn').style.display = 'block';
+
+  if (card.image) {
+    const prev = document.getElementById('imagePreview');
+    prev.src = card.image;
+    prev.style.display = 'block';
+    document.getElementById('imagePathInfo').textContent = card.image;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteCard(i) {
+  if (!confirm(`"${cards[i].name}" wirklich löschen?`)) return;
+  cards.splice(i, 1);
+  renderCards();
+  showToast('🗑 Karte gelöscht', 'success');
+  if (editIndex === i) cancelEdit();
+}
+
+function cancelEdit() {
+  editIndex = null;
+  resetForm();
+  document.getElementById('formTitle').textContent = 'Neue Karte';
+  document.getElementById('cancelBtn').style.display = 'none';
+}
+
+function resetForm() {
+  document.getElementById('inputName').value    = '';
+  document.getElementById('inputArticle').value = '';
+  document.getElementById('inputSerial').value  = '';
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('imagePreview').src = '';
+  document.getElementById('imagePathInfo').textContent = 'Bildpfad wird automatisch gesetzt';
+  document.getElementById('imageFile').value = '';
+  selectedImageName = null;
+}
+
+// ── IMAGE ──
+function handleImageSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  selectedImageName = file.name;
+  document.getElementById('imagePathInfo').textContent = `→ images/${file.name}`;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById('imagePreview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── IMPORT JSON ──
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      cards = data;
+      renderCards();
+      showToast(`📂 ${cards.length} Karten geladen`, 'success');
+    } catch {
+      showToast('❗ Ungültige JSON-Datei', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── DOWNLOAD JSON ──
+function downloadJSON() {
+  if (cards.length === 0) { showToast('❗ Keine Karten vorhanden', 'error'); return; }
+
+  const json = JSON.stringify(cards, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'cards.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('⬇ cards.json heruntergeladen', 'success');
+}
+
+// ── TOAST ──
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── INIT: load existing cards.json if possible ──
+fetch('cards.json')
+  .then(r => r.json())
+  .then(data => {
+    if (Array.isArray(data)) {
+      cards = data;
+      renderCards();
+      showToast(`📂 ${cards.length} Karten geladen`, 'success');
+    }
+  })
+  .catch(() => renderCards()); // kein Problem wenn nicht vorhanden
+
+</script>
+</body>
+</html>
